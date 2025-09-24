@@ -122,9 +122,20 @@ RUN mkdir -p /var/log/nginx
 # Expor porta 80
 EXPOSE 80
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+# Instalar curl para health check
+RUN apk add --no-cache curl
+
+# Health check mais robusto
+HEALTHCHECK --interval=10s --timeout=5s --start-period=10s --retries=5 \
     CMD curl -f http://localhost/health || exit 1
 
-# Comando para iniciar o Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Criar script de inicialização mais robusto
+RUN echo '#!/bin/sh' > /docker-entrypoint-custom.sh && \
+    echo 'set -e' >> /docker-entrypoint-custom.sh && \
+    echo 'echo "Starting Nginx..."' >> /docker-entrypoint-custom.sh && \
+    echo 'nginx -t' >> /docker-entrypoint-custom.sh && \
+    echo 'exec nginx -g "daemon off;"' >> /docker-entrypoint-custom.sh && \
+    chmod +x /docker-entrypoint-custom.sh
+
+# Comando para iniciar o Nginx com script customizado
+CMD ["/docker-entrypoint-custom.sh"]
