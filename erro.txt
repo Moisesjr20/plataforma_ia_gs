@@ -1,102 +1,50 @@
-Ação
-Commit: feat: initial commit - plataforma IA GS with Docker support 
-##########################################
-### Download Github Archive Started...
-### Wed, 24 Sep 2025 11:02:43 GMT
-##########################################
-
-#0 building with "default" instance using docker driver
-
-#1 [internal] load build definition from Dockerfile
-#1 transferring dockerfile: 1.63kB 0.0s done
-#1 DONE 0.1s
-
-#2 [internal] load metadata for docker.io/library/nginx:alpine
-#2 ...
-
-#3 [internal] load metadata for docker.io/library/node:18-alpine
-#3 DONE 1.9s
-
-#2 [internal] load metadata for docker.io/library/nginx:alpine
-#2 DONE 1.9s
-
-#4 [internal] load .dockerignore
-#4 transferring context: 595B done
-#4 DONE 0.0s
-
-#5 [builder 1/6] FROM docker.io/library/node:18-alpine@sha256:8d6421d663b4c28fd3ebc498332f249011d118945588d0a35cb9bc4b8ca09d9e
-#5 DONE 0.0s
-
-#6 [internal] load build context
-#6 transferring context: 813.05kB 0.1s done
-#6 DONE 0.1s
-
-#7 [production 1/3] FROM docker.io/library/nginx:alpine@sha256:42a516af16b852e33b7682d5ef8acbd5d13fe08fecadc7ed98605ba5e3b26ab8
-#7 resolve docker.io/library/nginx:alpine@sha256:42a516af16b852e33b7682d5ef8acbd5d13fe08fecadc7ed98605ba5e3b26ab8 0.0s done
-#7 sha256:42a516af16b852e33b7682d5ef8acbd5d13fe08fecadc7ed98605ba5e3b26ab8 10.33kB / 10.33kB done
-#7 sha256:60e48a050b6408d0c5dd59b98b6e36bf0937a0bbe99304e3e9c0e63b7563443a 2.50kB / 2.50kB done
-#7 sha256:4a86014ec6994761b7f3118cf47e4b4fd6bac15fc6fa262c4f356386bbc0e9d9 10.78kB / 10.78kB done
-#7 DONE 0.3s
-
-#5 [builder 1/6] FROM docker.io/library/node:18-alpine@sha256:8d6421d663b4c28fd3ebc498332f249011d118945588d0a35cb9bc4b8ca09d9e
-#5 resolve docker.io/library/node:18-alpine@sha256:8d6421d663b4c28fd3ebc498332f249011d118945588d0a35cb9bc4b8ca09d9e 0.0s done
-#5 sha256:8d6421d663b4c28fd3ebc498332f249011d118945588d0a35cb9bc4b8ca09d9e 7.67kB / 7.67kB done
-#5 sha256:929b04d7c782f04f615cf785488fed452b6569f87c73ff666ad553a7554f0006 1.72kB / 1.72kB done
-#5 sha256:ee77c6cd7c1886ecc802ad6cedef3a8ec1ea27d1fb96162bf03dd3710839b8da 6.18kB / 6.18kB done
-#5 DONE 0.1s
-
-#8 [builder 2/6] WORKDIR /app
-#8 DONE 0.1s
-
-#9 [builder 3/6] COPY package*.json ./
-#9 DONE 0.1s
-
-#10 [builder 4/6] RUN npm ci --only=production
-#10 0.439 npm warn config only Use `--omit=dev` to omit dev dependencies from the install.
-#10 6.617 
-#10 6.617 added 158 packages, and audited 159 packages in 6s
-#10 6.618 
-#10 6.618 32 packages are looking for funding
-#10 6.618   run `npm fund` for details
-#10 6.619 
-#10 6.619 found 0 vulnerabilities
-#10 6.621 npm notice
-#10 6.621 npm notice New major version of npm available! 10.8.2 -> 11.6.0
-#10 6.621 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.6.0
-#10 6.621 npm notice To update run: npm install -g npm@11.6.0
-#10 6.621 npm notice
-#10 DONE 6.7s
-
-#11 [builder 5/6] COPY . .
-#11 DONE 0.1s
-
-#12 [builder 6/6] RUN npm run build
-#12 0.324 
-#12 0.324 > ge-ia-platform@0.0.0 build
-#12 0.324 > tsc && vite build
-#12 0.324 
-#12 0.346 sh: tsc: not found
-#12 ERROR: process "/bin/sh -c npm run build" did not complete successfully: exit code: 127
-------
- > [builder 6/6] RUN npm run build:
-0.324 
-0.324 > ge-ia-platform@0.0.0 build
-0.324 > tsc && vite build
-0.324 
-0.346 sh: tsc: not found
-------
-Dockerfile:17
---------------------
-  15 |     
-  16 |     # Build da aplicação
-  17 | >>> RUN npm run build
-  18 |     
-  19 |     # Estágio de produção com Nginx
---------------------
-ERROR: failed to build: failed to solve: process "/bin/sh -c npm run build" did not complete successfully: exit code: 127
-##########################################
-### Error
-### Wed, 24 Sep 2025 11:02:54 GMT
-##########################################
-
-Command failed with exit code 1: docker buildx build --network host -f /etc/easypanel/projects/projetos_avulsos/sistema_gs/code/Dockerfile -t easypanel/projetos_avulsos/sistema_gs --label 'keep=true' --build-arg 'GIT_SHA=4b72ed743a1c4709afc4c7f0315658792f78062d' /etc/easypanel/projects/projetos_avulsos/sistema_gs/code/
+/docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+/docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+/docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+10-listen-on-ipv6-by-default.sh: info: Getting the checksum of /etc/nginx/conf.d/default.conf
+10-listen-on-ipv6-by-default.sh: info: /etc/nginx/conf.d/default.conf differs from the packaged version
+/docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+/docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+/docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+/docker-entrypoint.sh: Configuration complete; ready for start up
+2025/09/24 11:11:43 [notice] 1#1: using the "epoll" event method
+2025/09/24 11:11:43 [notice] 1#1: nginx/1.29.1
+2025/09/24 11:11:43 [notice] 1#1: built by gcc 14.2.0 (Alpine 14.2.0) 
+2025/09/24 11:11:43 [notice] 1#1: OS: Linux 6.8.0-60-generic
+2025/09/24 11:11:43 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+2025/09/24 11:11:43 [notice] 1#1: start worker processes
+2025/09/24 11:11:43 [notice] 1#1: start worker process 29
+2025/09/24 11:11:43 [notice] 1#1: start worker process 30
+/docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+/docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+/docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+10-listen-on-ipv6-by-default.sh: info: Getting the checksum of /etc/nginx/conf.d/default.conf
+10-listen-on-ipv6-by-default.sh: info: /etc/nginx/conf.d/default.conf differs from the packaged version
+/docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+/docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+/docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+/docker-entrypoint.sh: Configuration complete; ready for start up
+2025/09/24 11:15:54 [notice] 1#1: signal 3 (SIGQUIT) received, shutting down
+2025/09/24 11:15:54 [notice] 29#29: gracefully shutting down
+2025/09/24 11:15:54 [notice] 29#29: exiting
+2025/09/24 11:15:54 [notice] 30#30: gracefully shutting down
+2025/09/24 11:15:54 [notice] 30#30: exiting
+2025/09/24 11:15:54 [notice] 29#29: exit
+2025/09/24 11:15:54 [notice] 30#30: exit
+2025/09/24 11:15:54 [notice] 1#1: signal 17 (SIGCHLD) received from 30
+2025/09/24 11:15:54 [notice] 1#1: worker process 30 exited with code 0
+2025/09/24 11:15:54 [notice] 1#1: signal 29 (SIGIO) received
+2025/09/24 11:15:54 [notice] 1#1: signal 17 (SIGCHLD) received from 29
+2025/09/24 11:15:54 [notice] 1#1: worker process 29 exited with code 0
+2025/09/24 11:15:54 [notice] 1#1: exit
+Starting Nginx...
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+Starting Nginx...
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+Starting Nginx...
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+Nginx configuration test successful
+Waiting for EasyPanel health check initialization...
