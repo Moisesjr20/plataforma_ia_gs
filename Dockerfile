@@ -13,7 +13,23 @@ RUN npm ci
 # Copiar código fonte
 COPY . .
 
-# Build da aplicação
+# Definir ARGs para receber variáveis de ambiente durante o build
+ARG VITE_SUPABASE_URL
+ARG VITE_SUPABASE_ANON_KEY
+ARG VITE_WEBHOOK_AUGUSTO
+ARG VITE_WEBHOOK_SOFIA
+ARG VITE_WEBHOOK_CAROL
+ARG NODE_ENV=production
+
+# Exportar como variáveis de ambiente para o build
+ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
+ENV VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
+ENV VITE_WEBHOOK_AUGUSTO=$VITE_WEBHOOK_AUGUSTO
+ENV VITE_WEBHOOK_SOFIA=$VITE_WEBHOOK_SOFIA
+ENV VITE_WEBHOOK_CAROL=$VITE_WEBHOOK_CAROL
+ENV NODE_ENV=$NODE_ENV
+
+# Build da aplicação com as variáveis de ambiente
 RUN npm run build
 
 # Estágio de produção com Nginx
