@@ -57,9 +57,9 @@ export const Chat: React.FC = () => {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-br from-black via-gray-900 to-black">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-black via-gray-900 to-black">
       {/* Header */}
-      <header className="bg-gradient-to-r from-black via-gray-900 to-black border-b border-gold/20 px-4 py-4">
+      <header className="bg-gradient-to-r from-black via-gray-900 to-black border-b border-gold/20 px-4 py-4 flex-shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Button
@@ -86,9 +86,9 @@ export const Chat: React.FC = () => {
       </header>
 
       {/* Chat Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-h-0">
         <ScrollArea className="flex-1 px-4 py-6" ref={scrollAreaRef}>
-          <div className="max-w-4xl mx-auto space-y-6">
+          <div className="max-w-4xl mx-auto space-y-2">
             {messages.length === 0 && (
               <div className="text-center py-12">
                 <div 
@@ -109,10 +109,10 @@ export const Chat: React.FC = () => {
             {messages.map((message) => (
               <div
                 key={message.id}
-                className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
+                className={`flex ${message.isUser ? 'justify-end' : 'justify-start'} mb-4`}
               >
                 <div
-                  className={`max-w-xs lg:max-w-md px-4 py-3 rounded-lg ${
+                  className={`min-w-0 max-w-[85%] sm:max-w-[75%] lg:max-w-[65%] px-4 py-3 rounded-lg ${
                     message.isUser
                       ? 'bg-accent text-white'
                       : 'bg-white border border-gray-200 text-gray-900'
@@ -120,13 +120,15 @@ export const Chat: React.FC = () => {
                 >
                   <div className="flex items-start space-x-2">
                     {!message.isUser && (
-                      <Bot className="w-4 h-4 mt-1 text-gray-500" />
+                      <Bot className="w-4 h-4 mt-1 flex-shrink-0 text-gray-500" />
                     )}
-                    <div className="flex-1">
-                      <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                        {message.content}
-                      </p>
-                      <p className={`text-xs mt-1 ${
+                    <div className="flex-1 min-w-0">
+                      <div className="max-h-96 overflow-y-auto">
+                        <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+                          {message.content}
+                        </p>
+                      </div>
+                      <p className={`text-xs mt-2 ${
                         message.isUser ? 'text-blue-100' : 'text-gray-500'
                       }`}>
                         {message.timestamp.toLocaleTimeString([], { 
@@ -136,7 +138,7 @@ export const Chat: React.FC = () => {
                       </p>
                     </div>
                     {message.isUser && (
-                      <User className="w-4 h-4 mt-1 text-blue-100" />
+                      <User className="w-4 h-4 mt-1 flex-shrink-0 text-blue-100" />
                     )}
                   </div>
                 </div>
@@ -160,7 +162,7 @@ export const Chat: React.FC = () => {
         </ScrollArea>
 
         {/* Input Area */}
-        <div className="border-t border-gold/20 bg-black/50 backdrop-blur-sm px-4 py-4">
+        <div className="border-t border-gold/20 bg-black/50 backdrop-blur-sm px-4 py-4 flex-shrink-0">
           <form onSubmit={handleSendMessage} className="max-w-4xl mx-auto">
             <div className="flex space-x-3">
               <Input
