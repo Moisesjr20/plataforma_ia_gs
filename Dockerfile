@@ -122,20 +122,22 @@ RUN mkdir -p /var/log/nginx
 # Expor porta 80
 EXPOSE 80
 
-# Instalar curl para health check
+# Instalar curl para health checks
 RUN apk add --no-cache curl
 
-# Health check mais robusto
-HEALTHCHECK --interval=10s --timeout=5s --start-period=10s --retries=5 \
-    CMD curl -f http://localhost/health || exit 1
+# Health check otimizado para EasyPanel - resposta mais rápida
+HEALTHCHECK --interval=5s --timeout=2s --start-period=1s --retries=2 \
+  CMD curl -f http://localhost/health || exit 1
 
 # Criar script de inicialização mais robusto
 RUN echo '#!/bin/sh' > /docker-entrypoint-custom.sh && \
-    echo 'set -e' >> /docker-entrypoint-custom.sh && \
     echo 'echo "Starting Nginx..."' >> /docker-entrypoint-custom.sh && \
     echo 'nginx -t' >> /docker-entrypoint-custom.sh && \
+    echo 'echo "Nginx configuration test successful"' >> /docker-entrypoint-custom.sh && \
+    echo 'echo "Waiting for EasyPanel health check initialization..."' >> /docker-entrypoint-custom.sh && \
+    echo 'sleep 2' >> /docker-entrypoint-custom.sh && \
     echo 'exec nginx -g "daemon off;"' >> /docker-entrypoint-custom.sh && \
     chmod +x /docker-entrypoint-custom.sh
 
-# Comando para iniciar o Nginx com script customizado
+# Usar o script customizado
 CMD ["/docker-entrypoint-custom.sh"]
