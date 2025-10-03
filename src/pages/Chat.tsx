@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect } from 'react'
-import { Send, Bot, User, Settings, FileText } from 'lucide-react'
+import React, { useState, useRef, useEffect } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
+import { Send, Bot, User, Settings, FileText, LogOut, Brain, Lightbulb, TrendingUp, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
@@ -7,15 +8,47 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { useChat } from '@/hooks/useChat'
 import { AI_AGENTS } from '@/data/agents'
 import { AIAgent } from '@/types'
+import { LogoText } from '@/components/Logo'
 import { RAGControls } from '@/components/RAGControls'
 import { LogsViewer } from '@/components/LogsViewer'
+import { useAuth } from '@/contexts/AuthContext'
+
+const getAgentIcon = (agentId: string) => {
+  switch (agentId) {
+    case 'augusto':
+      return <TrendingUp className="w-8 h-8 text-black" />
+    case 'sofia':
+      return <Lightbulb className="w-8 h-8 text-black" />
+    case 'carol':
+      return <Brain className="w-8 h-8 text-black" />
+    default:
+      return <Bot className="w-8 h-8 text-black" />
+  }
+}
 
 export default function Chat() {
+  const { user, signOut } = useAuth()
+  const navigate = useNavigate()
+  const { agentId } = useParams<{ agentId: string }>()
+  
+  const handleSignOut = async () => {
+    await signOut()
+    navigate('/login')
+  }
+
+  const handleBackToLobby = () => {
+    navigate('/')
+  }
   const [selectedAgent, setSelectedAgent] = useState<AIAgent>(AI_AGENTS[0])
   const [inputMessage, setInputMessage] = useState('')
   const [showRAGControls, setShowRAGControls] = useState(false)
   const [showLogs, setShowLogs] = useState(false)
-  const { messages, isLoading, sendMessage, clearMessages } = useChat()
+  const { messages, isLoading, sendMessage } = useChat()
+  
+  const clearMessages = () => {
+    // This function will be implemented in the useChat hook
+    console.log('Clear messages functionality needs to be implemented in useChat hook')
+  }
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
@@ -26,248 +59,216 @@ export default function Chat() {
     scrollToBottom()
   }, [messages])
 
-  const handleSendMessage = async (e: import('react').FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!inputMessage.trim() || isLoading) return
+    if (!inputMessage.trim()) return
 
-    await sendMessage(inputMessage.trim(), selectedAgent)
+    await sendMessage(inputMessage, selectedAgent.id)
     setInputMessage('')
   }
 
-  const formatTimestamp = (date: Date) => {
-    return date.toLocaleTimeString('pt-BR', { 
-      hour: '2-digit', 
-      minute: '2-digit' 
-    })
-  }
-
   return (
-    <div className="flex h-screen bg-background">
-      {/* Sidebar */}
-      <div className="w-80 bg-card border-r border-border flex flex-col">
-        <div className="p-4 border-b border-border">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-card-foreground">Agentes IA</h2>
-            <div className="flex gap-2">
+    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black">
+      {/* Header */}
+      <header className="bg-black/50 backdrop-blur-sm border-b border-gold/20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-20">
+            <div className="flex items-center space-x-4">
               <Button
                 variant="outline"
-                size="sm"
-                onClick={() => {
-                  setShowRAGControls(!showRAGControls);
-                  setShowLogs(false);
-                }}
-                title="Configurações RAG"
+                onClick={handleBackToLobby}
+                className="border-gold/30 text-gold hover:bg-gold/10 hover:border-gold/50 transition-all duration-300"
               >
-                <Settings className="h-4 w-4" />
+                ← Voltar
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setShowLogs(!showLogs);
-                  setShowRAGControls(false);
-                }}
-                title="Ver Logs"
-              >
-                <FileText className="h-4 w-4" />
-              </Button>
+              <LogoText />
             </div>
-          </div>
-
-          {showRAGControls && (
-            <div className="mb-4 max-h-[70vh] overflow-y-auto">
-              <RAGControls agentId={selectedAgent.id} agentName={selectedAgent.name} />
-            </div>
-          )}
-
-          {showLogs && (
-            <div className="mb-4 max-h-[70vh] overflow-y-auto">
-              <LogsViewer />
-            </div>
-          )}
-        </div>
-
-        <div className="flex-1 overflow-y-auto p-4 space-y-3">
-          {AI_AGENTS.map((agent) => (
-            <Card
-              key={agent.id}
-              className={`cursor-pointer transition-all hover:shadow-md ${
-                selectedAgent.id === agent.id
-                  ? 'ring-2 ring-primary bg-primary/5'
-                  : 'hover:bg-accent'
-              }`}
-              onClick={() => setSelectedAgent(agent)}
-            >
-              <CardContent className="p-4">
-                <div className="flex items-center space-x-3">
-                  <Avatar>
-                    <AvatarFallback 
-                      className="text-white font-semibold"
-                      style={{ backgroundColor: agent.color }}
-                    >
-                      {agent.name.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-card-foreground truncate">
-                      {agent.name}
-                    </h3>
-                    <p className="text-sm text-muted-foreground line-clamp-2">
-                      {agent.description}
-                    </p>
-                  </div>
+            <div className="flex items-center space-x-6">
+              <div className="flex items-center space-x-3 text-gold/80">
+                <div className="w-8 h-8 bg-gradient-to-br from-gold-400 to-gold-600 rounded-full flex items-center justify-center">
+                  <User className="w-4 h-4 text-black" />
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        <div className="p-4 border-t border-border">
-          <Button
-            variant="outline"
-            onClick={clearMessages}
-            className="w-full"
-          >
-            Limpar Conversa
-          </Button>
-        </div>
-      </div>
-
-      {/* Chat Area */}
-      <div className="flex-1 flex flex-col">
-        {/* Header */}
-        <div className="bg-card border-b border-border p-4">
-          <div className="flex items-center space-x-3">
-            <Avatar>
-              <AvatarFallback 
-                className="text-white font-semibold"
-                style={{ backgroundColor: selectedAgent.color }}
+                <span className="font-medium text-white">{user?.name}</span>
+              </div>
+              <Button 
+                variant="outline" 
+                onClick={handleSignOut}
+                className="border-gold/30 text-gold hover:bg-gold/10 hover:border-gold/50 transition-all duration-300"
               >
-                {selectedAgent.name.charAt(0)}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <h1 className="text-xl font-semibold text-card-foreground">
-                {selectedAgent.name}
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                {selectedAgent.description}
-              </p>
+                <LogOut className="w-4 h-4 mr-2" />
+                Sair
+              </Button>
             </div>
           </div>
         </div>
+      </header>
 
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
-              <Bot className="h-12 w-12 mb-4" />
-              <h3 className="text-lg font-medium mb-2">
-                Olá! Sou {selectedAgent.name}
-              </h3>
-              <p className="text-center max-w-md">
-                {selectedAgent.personality}
-              </p>
-            </div>
-          ) : (
-            messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex ${
-                  message.role === 'user' ? 'justify-end' : 'justify-start'
+      <div className="flex h-[calc(100vh-5rem)]">
+        {/* Sidebar */}
+        <div className="w-80 bg-gradient-to-b from-gray-900/90 to-black/95 border-r border-gold/20 flex flex-col backdrop-blur-sm">
+          {/* Sidebar Header */}
+          <div className="p-6 border-b border-gold/20">
+            <h2 className="text-xl font-bold text-white mb-2">Assistentes IA</h2>
+            <p className="text-sm text-gray-300">Escolha um assistente especializado</p>
+          </div>
+
+          {/* Agent List */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            {AI_AGENTS.map((agent) => (
+              <Card
+                key={agent.id}
+                className={`cursor-pointer transition-all duration-500 hover:shadow-2xl hover:shadow-gold/10 backdrop-blur-sm hover:transform hover:scale-[1.02] ${
+                  selectedAgent.id === agent.id
+                    ? 'ring-2 ring-gold/50 bg-gradient-to-br from-gold/10 to-gold/5 border-gold/40'
+                    : 'bg-gradient-to-br from-gray-900/90 to-black/95 border-gold/20 hover:border-gold/40'
                 }`}
+                onClick={() => setSelectedAgent(agent)}
               >
-                <div
-                  className={`flex max-w-xs lg:max-w-md xl:max-w-lg ${
-                    message.role === 'user' ? 'flex-row-reverse' : 'flex-row'
-                  }`}
-                >
-                  <Avatar className="flex-shrink-0">
-                    <AvatarFallback
-                      className={`${
-                        message.role === 'user'
-                          ? 'bg-primary text-primary-foreground'
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="relative">
+                      <div className="w-12 h-12 bg-gradient-to-br from-gold-400 to-gold-600 rounded-full flex items-center justify-center shadow-lg shadow-gold/25">
+                        {getAgentIcon(agent.id)}
+                      </div>
+                      <div className="absolute -inset-1 bg-gradient-to-r from-gold-400 to-gold-600 rounded-full opacity-20 transition-opacity duration-300 blur-sm"></div>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className={`font-medium truncate ${
+                        selectedAgent.id === agent.id 
+                          ? 'text-gray-900' 
                           : 'text-white'
-                      }`}
-                      style={
-                        message.role === 'assistant'
-                          ? { backgroundColor: selectedAgent.color }
-                          : undefined
-                      }
-                    >
-                      {message.role === 'user' ? (
-                        <User className="h-4 w-4" />
-                      ) : (
-                        selectedAgent.name.charAt(0)
-                      )}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div
-                    className={`mx-3 p-3 rounded-lg ${
-                      message.role === 'user'
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-card border border-border text-card-foreground'
-                    }`}
-                  >
-                    <p className="text-sm whitespace-pre-wrap">
-                      {message.content}
-                    </p>
-                    <p
-                      className={`text-xs mt-1 ${
-                        message.role === 'user'
-                          ? 'text-primary-foreground/70'
-                          : 'text-muted-foreground'
-                      }`}
-                    >
-                      {formatTimestamp(message.timestamp)}
-                    </p>
+                      }`}>
+                        {agent.name}
+                      </h3>
+                      <p className={`text-sm line-clamp-2 ${
+                        selectedAgent.id === agent.id 
+                          ? 'text-gray-700' 
+                          : 'text-gray-300'
+                      }`}>
+                        {agent.description}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </div>
-            ))
-          )}
-          {isLoading && (
-            <div className="flex justify-start">
-              <div className="flex">
-                <Avatar className="flex-shrink-0">
-                  <AvatarFallback
-                    className="text-white"
-                    style={{ backgroundColor: selectedAgent.color }}
-                  >
-                    {selectedAgent.name.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="mx-3 p-3 bg-white border border-gray-200 rounded-lg">
-                  <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-          <div ref={messagesEndRef} />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Sidebar Footer */}
+          <div className="p-4 border-t border-gold/20 space-y-3">
+            <Button
+              variant="outline"
+              className="w-full border-gold/30 text-gold hover:bg-gold/10 hover:border-gold/50 transition-all duration-300"
+            >
+              <Settings className="w-4 h-4 mr-2" />
+              Configurações RAG
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full border-gold/30 text-gold hover:bg-gold/10 hover:border-gold/50 transition-all duration-300"
+            >
+              <FileText className="w-4 h-4 mr-2" />
+              Logs
+            </Button>
+            <Button
+              variant="outline"
+              onClick={clearMessages}
+              className="w-full border-gold/30 text-gold hover:bg-gold/10 hover:border-gold/50 transition-all duration-300"
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              Limpar Conversa
+            </Button>
+          </div>
         </div>
 
-        {/* Input */}
-        <div className="bg-card border-t border-border p-4">
-          <form onSubmit={handleSendMessage} className="flex space-x-2">
-            <Input
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              placeholder={`Digite sua mensagem para ${selectedAgent.name}...`}
-              disabled={isLoading}
-              className="flex-1"
-            />
-            <Button
-              type="submit"
-              disabled={!inputMessage.trim() || isLoading}
-              size="icon"
-            >
-              <Send className="h-4 w-4" />
-            </Button>
-          </form>
+        {/* Main Chat Area */}
+        <div className="flex-1 flex flex-col bg-gradient-to-br from-gray-900/50 to-black/80">
+          {/* Chat Header */}
+          <div className="p-6 border-b border-gold/20 bg-gradient-to-r from-gray-900/80 to-black/90 backdrop-blur-sm">
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <div className="w-12 h-12 bg-gradient-to-br from-gold-400 to-gold-600 rounded-full flex items-center justify-center shadow-lg shadow-gold/25">
+                  {getAgentIcon(selectedAgent.id)}
+                </div>
+                <div className="absolute -inset-1 bg-gradient-to-r from-gold-400 to-gold-600 rounded-full opacity-20 transition-opacity duration-300 blur-sm"></div>
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-white">{selectedAgent.name}</h1>
+                <p className="text-gray-300">{selectedAgent.description}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Messages Area */}
+          <div className="flex-1 overflow-y-auto p-6 bg-gradient-to-br from-gray-900/30 to-black/60">
+            {messages.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full text-center">
+                <div className="relative mb-6">
+                  <div className="w-20 h-20 bg-gradient-to-br from-gold-400 to-gold-600 rounded-full flex items-center justify-center shadow-2xl shadow-gold/30">
+                    {getAgentIcon(selectedAgent.id)}
+                  </div>
+                  <div className="absolute -inset-2 bg-gradient-to-r from-gold-400 to-gold-600 rounded-full opacity-20 transition-opacity duration-300 blur-lg"></div>
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-3">
+                  Olá! Sou {selectedAgent.name}
+                </h3>
+                <p className="text-gray-300 max-w-md leading-relaxed">
+                  {selectedAgent.description}
+                </p>
+                <div className="mt-8 w-full max-w-md">
+                  <div className="h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent"></div>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {messages.map((message, index) => (
+                  <div
+                    key={index}
+                    className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <div
+                      className={`max-w-[80%] rounded-2xl px-6 py-4 shadow-lg ${
+                        message.role === 'user'
+                          ? 'bg-gradient-to-br from-gold-500 to-gold-600 text-white border border-gold/40'
+                          : 'bg-gradient-to-br from-gray-900/90 to-black/95 text-white border border-gold/30'
+                      }`}
+                    >
+                      {message.role === 'assistant' && message.content === '...' ? (
+                        <div className="flex space-x-1">
+                          <div className="w-2 h-2 bg-gold rounded-full animate-bounce"></div>
+                          <div className="w-2 h-2 bg-gold rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                          <div className="w-2 h-2 bg-gold rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                        </div>
+                      ) : (
+                        <p className="whitespace-pre-wrap leading-relaxed">{message.content}</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Input Area */}
+          <div className="p-6 border-t border-gold/20 bg-gradient-to-r from-gray-900/90 to-black/95 backdrop-blur-sm">
+            <form onSubmit={handleSendMessage} className="flex space-x-4">
+              <Input
+                value={inputMessage}
+                onChange={(e) => setInputMessage(e.target.value)}
+                placeholder={`Digite sua mensagem para ${selectedAgent.name}...`}
+                className="flex-1 bg-black/50 border-gold/30 text-white placeholder:text-gray-400 focus:border-gold/50 focus:ring-gold/20"
+                disabled={isLoading}
+              />
+              <Button
+                type="submit"
+                disabled={!inputMessage.trim() || isLoading}
+                className="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-medium px-8 transition-all duration-300 shadow-lg shadow-gold/25"
+              >
+                <Send className="w-4 h-4" />
+              </Button>
+            </form>
+          </div>
         </div>
       </div>
     </div>
