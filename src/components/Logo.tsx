@@ -1,11 +1,10 @@
-import React from 'react'
 
 interface LogoProps {
   size?: number
   className?: string
 }
 
-export const Logo: React.FC<LogoProps> = ({ size = 48, className = '' }) => {
+export const Logo = ({ size = 48, className = '' }: LogoProps) => {
   return (
     <div 
       className={`rounded-full overflow-hidden shadow-lg shadow-gold/25 ring-2 ring-gold/30 hover:ring-gold/50 transition-all duration-300 ${className}`}
@@ -29,10 +28,10 @@ export const Logo: React.FC<LogoProps> = ({ size = 48, className = '' }) => {
   )
 }
 
-export const LogoText: React.FC<{ className?: string, size?: 'sm' | 'md' | 'lg' }> = ({ 
-  className = '', 
-  size = 'md' 
-}) => {
+export const LogoText = ({
+  className = '',
+  size = 'md'
+}: { className?: string, size?: 'sm' | 'md' | 'lg' }) => {
   const logoSizes = {
     sm: 32,
     md: 48,

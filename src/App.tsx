@@ -1,14 +1,13 @@
-import React from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from '@/contexts/AuthContext'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { Login } from '@/pages/Login'
 import { Register } from '@/pages/Register'
 import { Lobby } from '@/pages/Lobby'
-import { Chat } from '@/pages/Chat'
+import Chat from '@/pages/Chat'
 import './App.css'
 
-const AppRoutes: React.FC = () => {
+const AppRoutes = () => {
   const { user, loading } = useAuth()
 
   if (loading) {

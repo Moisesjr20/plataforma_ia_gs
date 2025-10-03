@@ -2,9 +2,10 @@
   "compilerOptions": {
     "composite": true,
     "skipLibCheck": true,
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "allowSyntheticDefaultImports": true
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "outDir": "dist"
   },
-  "include": ["vite.config.ts"]
+  "include": ["scripts/updateKnowledgeBase.ts", "src/services/openai.ts", "src/services/pdfProcessor.ts"]
 }

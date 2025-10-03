@@ -9,18 +9,18 @@ export interface AIAgent {
   name: string
   description: string
   personality: string
-  webhookUrl: string
   color: string
 }
 
-export interface ChatMessage {
+export interface Message {
   id: string
   content: string
   isUser: boolean
+  role: 'user' | 'assistant'
   timestamp: Date
 }
 
 export interface ChatSession {
   agentId: string
-  messages: ChatMessage[]
+  messages: Message[]
 }
