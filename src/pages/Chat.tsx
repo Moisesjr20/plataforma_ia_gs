@@ -12,6 +12,15 @@ import { LogoText } from '@/components/Logo'
 import { RAGControls } from '@/components/RAGControls'
 import { LogsViewer } from '@/components/LogsViewer'
 import { useAuth } from '@/contexts/AuthContext'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+  DialogFooter,
+} from "@/components/ui/dialog"
 
 const getAgentIcon = (agentId: string) => {
   switch (agentId) {
@@ -43,12 +52,7 @@ export default function Chat() {
   const [inputMessage, setInputMessage] = useState('')
   const [showRAGControls, setShowRAGControls] = useState(false)
   const [showLogs, setShowLogs] = useState(false)
-  const { messages, isLoading, sendMessage } = useChat()
-  
-  const clearMessages = () => {
-    // This function will be implemented in the useChat hook
-    console.log('Clear messages functionality needs to be implemented in useChat hook')
-  }
+  const { messages, isLoading, sendMessage, clearMessages } = useChat()
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
@@ -156,20 +160,55 @@ export default function Chat() {
 
           {/* Sidebar Footer */}
           <div className="p-4 border-t border-gold/20 space-y-3">
-            <Button
-              variant="outline"
-              className="w-full border-gold/30 text-gold hover:bg-gold/10 hover:border-gold/50 transition-all duration-300"
-            >
-              <Settings className="w-4 h-4 mr-2" />
-              Configurações RAG
-            </Button>
-            <Button
-              variant="outline"
-              className="w-full border-gold/30 text-gold hover:bg-gold/10 hover:border-gold/50 transition-all duration-300"
-            >
-              <FileText className="w-4 h-4 mr-2" />
-              Logs
-            </Button>
+            <Dialog open={showRAGControls} onOpenChange={setShowRAGControls}>
+              <DialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full border-gold/30 text-gold hover:bg-gold/10 hover:border-gold/50 transition-all duration-300"
+                >
+                  <Settings className="w-4 h-4 mr-2" />
+                  Configurações RAG
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl h-[90vh] bg-gray-900/90 text-white border-gold/30">
+                <DialogHeader>
+                  <DialogTitle>Configurações Avançadas do RAG</DialogTitle>
+                </DialogHeader>
+                <div className="overflow-y-auto p-4">
+                  <RAGControls agentId={selectedAgent.id} agentName={selectedAgent.name} />
+                </div>
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button variant="outline" className="border-gold/30 text-gold hover:bg-gold/10">Fechar</Button>
+                  </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            <Dialog open={showLogs} onOpenChange={setShowLogs}>
+              <DialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full border-gold/30 text-gold hover:bg-gold/10 hover:border-gold/50 transition-all duration-300"
+                >
+                  <FileText className="w-4 h-4 mr-2" />
+                  Logs
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-7xl h-[90vh] bg-gray-900/90 text-white border-gold/30 flex flex-col">
+                <DialogHeader>
+                  <DialogTitle>Logs de Execução</DialogTitle>
+                </DialogHeader>
+                <div className="flex-1 overflow-y-auto">
+                  <LogsViewer />
+                </div>
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button variant="outline" className="border-gold/30 text-gold hover:bg-gold/10">Fechar</Button>
+                  </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
             <Button
               variant="outline"
               onClick={clearMessages}
