@@ -67,7 +67,7 @@ export default function Chat() {
     e.preventDefault()
     if (!inputMessage.trim()) return
 
-    await sendMessage(inputMessage, selectedAgent.id)
+    await sendMessage(inputMessage, selectedAgent)
     setInputMessage('')
   }
 
